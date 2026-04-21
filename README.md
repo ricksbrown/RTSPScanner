@@ -28,7 +28,7 @@ options:
                         Single ipv4 address or ipv4 network in CIDR notation ex: 192.168.0.100 or 192.168.0/24
   -n NAME, --name NAME  Camera Name | only used if single address given
   -p PORTS, --ports PORTS
-                        csv format: 554,8554
+                        csv or ranges: 554,8554,10000-10010
   -pp PATHS, --paths PATHS
                         csv format: '/Streaming/Channels/101,/live,/live2'
   -c CREDS, --creds CREDS
@@ -57,6 +57,18 @@ $~> rtspscanner -m scan -c admin:admin -a 192.168.2.0/24
   192.168.2.190:8554
   192.168.2.189:8554
 
+Scan Summary:
+  Address target: 192.168.2.0/24
+  IPs in scope: 256
+  Ports in scope: 2
+  Socket checks: 512
+  Open RTSP candidates: 4
+  Credentials tried per candidate: 1
+  Paths tried per candidate: 2
+  RTSP URL checks: 8
+  Timeout per RTSP check: 10s
+  Timeout retries: 2
+
 1 Camera Found:
   192.168.2.190: rtsp://admin:admin@192.168.2.190:8554/Streaming/Channels/101
 
@@ -81,6 +93,18 @@ $~> rtspscanner -m scan -c admin:admin -a 192.168.2.189
 1 Potential RTSP Source:
   192.168.2.190:8554
 
+Scan Summary:
+  Address target: 192.168.2.189
+  IPs in scope: 1
+  Ports in scope: 2
+  Socket checks: 2
+  Open RTSP candidates: 1
+  Credentials tried per candidate: 1
+  Paths tried per candidate: 2
+  RTSP URL checks: 2
+  Timeout per RTSP check: 10s
+  Timeout retries: 2
+
 1 Camera(s) Found:
   192.168.2.190: rtsp://admin:admin@192.168.2.190:8554/Streaming/Channels/101
 
@@ -90,6 +114,12 @@ Credentials Used:
 Paths Used:
   /Streaming/Channels/101
   /live
+```
+
+Ports can be passed as a CSV list, ranges, or a mix of both:
+
+```
+$~> rtspscanner -m scan -c admin:admin -a 192.168.2.0/24 -p 554,8554,10000-10010
 ```
 
 ## Add All Discovered RTSP Cameras to rtsp-simple-server
