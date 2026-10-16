@@ -20,12 +20,14 @@
 #    adds them to or removes them from rtsp-simple-server via its API
 
 
-from os import getenv,path,system
+from os import getenv,path,system,makedirs
+from os.path import join as path_join
 import subprocess
 import requests
 import json
 import sys
 import ipaddress
+from uuid import uuid4
 from PIL import Image
 from portscan import PortScan
     
@@ -112,6 +114,7 @@ class RTSPScanner:
 
     def scanner(self):
         self.ports = self.normalizePorts(self.ports)
+        makedirs("snapshots", exist_ok=True)
         self.portscan = PortScan(self.address,self.ports,stdout=False)
         results = self.portscan.run()
         flaky = []
@@ -134,7 +137,7 @@ class RTSPScanner:
                         status = f"Checking {rtsp}... "
                         if self.verbose:
                             print(status)
-                        snapshot = f"/tmp/test.png"
+                        snapshot = path_join("snapshots", f"{result['ip']}_{uuid4().hex}.png")
                         thumbnail = f"/tmp/test.webp"
                         timedout = False
                         cmd = None
