@@ -376,6 +376,9 @@ def main():
     print(f"{cameraCount} {CamDisp} Found:")
     for camera in scanner.scanResults['cameras']:
         print(f"  {camera[0]}: {camera[1]}")
+        camera_log_path = path_join(scanner.snapshotdir, "cameras.txt")
+        with open(camera_log_path, "a", encoding="utf-8") as camera_log:
+            camera_log.write(f"{camera[1]}\n")
 
     # Flaky Cameras Found
     flakyCount = len(scanner.scanResults['flaky'])
