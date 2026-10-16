@@ -46,6 +46,7 @@ class RTSPScanner:
         self.creds = self.splitCSV(getenv("RTSP_CREDS","none"))
         self.paths = self.splitCSV(getenv("RTSP_PATHS","/Streaming/Channels/101,/live,live2"))
         self.address = getenv("RTSP_ADDRESS","192.168.2.0/24")
+        self.snapshotdir = "/tmp/rtspscanner"
         self.findone = False
         self.cameras = []
 
@@ -115,7 +116,7 @@ class RTSPScanner:
 
     def scanner(self):
         self.ports = self.normalizePorts(self.ports)
-        makedirs("snapshots", exist_ok=True)
+        makedirs(self.snapshotdir, exist_ok=True)
         self.portscan = PortScan(self.address,self.ports,stdout=False)
         results = self.portscan.run()
         flaky = []
@@ -145,7 +146,7 @@ class RTSPScanner:
                         status = f"Checking {rtsp}... "
                         if self.verbose:
                             print(status)
-                        snapshot = path_join("snapshots", f"{result['ip']}_{uuid4().hex}.png")
+                        snapshot = path_join(self.snapshotdir, f"{result['ip']}_{uuid4().hex}.png")
                         thumbnail = f"/tmp/test.webp"
                         timedout = False
                         cmd = None
@@ -295,8 +296,11 @@ def cla():
     parser.add_argument('-R','--timeoutretries',type=int,required=False,default=3,
                         help="Number of retries on timeout for ffmpeg command to determine if rtsp stream exists")
 
-    parser.add_argument('--findone', '--stop-after-first', dest='findone', action='store_true',
+    parser.add_argument('-S', '--findone', '--stop', dest='findone', action='store_true',
                         help="Stop scanning after the first successful RTSP camera is detected")
+
+    parser.add_argument('-O', '--snapshotdir', '--output', dest='snapshotdir', type=str, default="/tmp/rtspscanner",
+                        help="Directory for captured snapshots (default: /tmp/rtspscanner)")
     
     parser.add_argument('-v','--verbose',action='store_true',default=False,
                         help="Set verbosity to true")
@@ -322,6 +326,7 @@ def main():
     scanner.timeout = args['timeout']
     scanner.retries = args['timeoutretries']
     scanner.findone = args['findone']
+    scanner.snapshotdir = args['snapshotdir']
     args['mode'] = args['mode'].lower()
     if args['mode'] == "rem" or args['mode'] == "add":
         scanner.mode = args['mode']
