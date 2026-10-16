@@ -361,7 +361,7 @@ def main():
     if flakyCount > 0:
         CamDisp = "Cameras" if flakyCount > 1 else "Camera"
         print(f"\n{len(scanner.scanResults['flaky'])} Flaky {CamDisp}:")
-        print(f"Potential {CamDisp.lower()} that cannot be verfied within {scanner.timeout} second timeout.")
+        print(f"Potential {CamDisp.lower()} that cannot be verified within {scanner.timeout} second timeout.")
         print("This can be increased using the command line option -t <seconds>")
         for camera in scanner.scanResults['flaky']:
             print(f"  {camera[0]}: {camera[1]}")
