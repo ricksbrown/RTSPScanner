@@ -30,7 +30,7 @@ import ipaddress
 from uuid import uuid4
 from PIL import Image
 from portscan import PortScan
-    
+
 class RTSPScanner:
     def __init__(self,verbose=False,wspace="-"):
         # GET ENVIRONMENT VARIABLES
@@ -65,7 +65,7 @@ class RTSPScanner:
         else:
             for c in range(0,len(self.cameras)):
                 self.cameras[c][0] = self.cameras[c][0].replace('.',self.whitespace)
-            
+
         if not self.mode != "add":
             return self.cameras
 
@@ -265,34 +265,34 @@ def cla():
                         help="Whitespace Replacement can be - _ or #")
     parser.add_argument('-a','--address',type=str,required=False,default='192.168.2.0/24',
                         help="Single ipv4 address or ipv4 network in CIDR notation ex: 192.168.0.100 or 192.168.0/24")
-    
+
     parser.add_argument('-n','--name',required=False,default=None,
                         help="Camera Name | only used if single address given")
-    
+
     parser.add_argument('-p','--ports',type=str,required=False,default='554,8554',
                         help="csv or ranges: 554,8554,10000-10010")
-    
+
     parser.add_argument('-pp','--paths',type=str,required=False,default="/Streaming/Channels/101,/live,/live2",
                         help="csv format: '/Streaming/Channels/101,/live,/live2'")
-    
+
     parser.add_argument('-c','--creds',required=False,default="none",
                         help="csv formatted user:password pairs: username:password,user:pass")
-    
+
     parser.add_argument('-m','--mode',type=str,required=True,
                         help="add - add cameras found / rem - remove cameras found")
-    
+
     parser.add_argument('-A','--apiaddr',type=str,required=False,default="192.168.0.100",
                         help="rtsp-simple-server API IP Address/FQDN")
-    
+
     parser.add_argument('-P','--apiport',type=str,required=False,default="9997",
                         help="rtsp-simple-server API Port")
-    
+
     parser.add_argument('-t','--apitransport',type=str,required=False,default="http",
                         help='rtsp-simple-server API transport (http/https)')
-    
+
     parser.add_argument('-T','--timeout',type=int,required=False,default=10,
                         help="Timeout for ffmpeg command to determine if rtsp stream exists")
-    
+
     parser.add_argument('-R','--timeoutretries',type=int,required=False,default=3,
                         help="Number of retries on timeout for ffmpeg command to determine if rtsp stream exists")
 
@@ -301,10 +301,10 @@ def cla():
 
     parser.add_argument('-O', '--snapshotdir', '--output', dest='snapshotdir', type=str, default="/tmp/rtspscanner",
                         help="Directory for captured snapshots (default: /tmp/rtspscanner)")
-    
+
     parser.add_argument('-v','--verbose',action='store_true',default=False,
                         help="Set verbosity to true")
-    
+
     args = parser.parse_args()
     return args
 
@@ -404,4 +404,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
