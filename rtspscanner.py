@@ -46,6 +46,7 @@ class RTSPScanner:
         self.creds = self.splitCSV(getenv("RTSP_CREDS","none"))
         self.paths = self.splitCSV(getenv("RTSP_PATHS","/Streaming/Channels/101,/live,live2"))
         self.address = getenv("RTSP_ADDRESS","192.168.2.0/24")
+        self.findone = False
         self.cameras = []
 
     def run(self):
@@ -128,10 +129,17 @@ class RTSPScanner:
                 self.portscan.q.not_full.notify_all()
         #if self.verbose:
             #print(results)
+        stop_scanning = False
         for result in results:
+            if stop_scanning:
+                break
             if result:
                 for path in self.paths:
+                    if stop_scanning:
+                        break
                     for cred in self.creds:
+                        if stop_scanning:
+                            break
                         transport = f"rtsp://{cred}@" if cred != "none" else "rtsp://"
                         rtsp = f'{transport}{result["ip"]}:{result["port"]}{path}'
                         status = f"Checking {rtsp}... "
@@ -157,6 +165,7 @@ class RTSPScanner:
                             flaky.append([str(result['ip']),rtsp])
                         if cmd is not None and cmd.returncode == 0:
                             self.cameras.append([str(result['ip']),rtsp])
+                            stop_scanning = self.findone
                             status = "RTSP "
                             #resizeImg(self,img,output,height=180,ratio=1.777777778,fmt="webp"):
                             resize = self.resizeImg(snapshot,thumbnail)
@@ -285,6 +294,9 @@ def cla():
     
     parser.add_argument('-R','--timeoutretries',type=int,required=False,default=3,
                         help="Number of retries on timeout for ffmpeg command to determine if rtsp stream exists")
+
+    parser.add_argument('--findone', '--stop-after-first', dest='findone', action='store_true',
+                        help="Stop scanning after the first successful RTSP camera is detected")
     
     parser.add_argument('-v','--verbose',action='store_true',default=False,
                         help="Set verbosity to true")
@@ -309,6 +321,7 @@ def main():
     scanner.apitransport = args['apitransport']
     scanner.timeout = args['timeout']
     scanner.retries = args['timeoutretries']
+    scanner.findone = args['findone']
     args['mode'] = args['mode'].lower()
     if args['mode'] == "rem" or args['mode'] == "add":
         scanner.mode = args['mode']
